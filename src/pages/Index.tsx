@@ -1,13 +1,43 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import { RoleSelector } from '@/components/Layout/RoleSelector';
+import { AppLayout } from '@/components/Layout/AppLayout';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Dashboard } from '@/pages/Dashboard';
+import { FrontOrder } from '@/pages/FrontOrder';
+import { BarOperations } from '@/pages/BarOperations';
+
+function AppContent() {
+  const { user, login } = useAuth();
+
+  if (!user) {
+    return <RoleSelector onRoleSelect={(role) => login({ 
+      id: '1', 
+      name: '測試用戶', 
+      role 
+    })} />;
+  }
+
+  return (
+    <AppLayout>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/front-order" element={<FrontOrder />} />
+        <Route path="/bar-operations" element={<BarOperations />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </AppLayout>
+  );
+}
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </AuthProvider>
   );
 };
 
